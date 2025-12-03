@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻译功能测试 - 数字替换测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #333;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .test-item {
+            margin: 15px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+            border-radius: 4px;
+        }
+        .test-item h3 {
+            margin-top: 0;
+            color: #555;
+        }
+        .original {
+            color: #666;
+            font-style: italic;
+            margin-bottom: 8px;
+        }
+        .expected {
+            color: #2196F3;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .actual {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        .result {
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
+        .pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .test-element {
+            margin: 10px 0;
+            padding: 10px;
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>翻译功能测试 - 数字替换功能</h1>
+    
+    <div class="info">
+        <strong>说明：</strong>此页面用于测试翻译插件是否能正确处理带数字的文本替换。
+        例如："8% increased Projectile Damage" 应该被翻译为 "投射物伤害提高 8%"。
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 1: 投射物伤害（单个数字）</h2>
+        <div class="test-item">
+            <h3>测试文本 1</h3>
+            <div class="original">原文: <span id="test1-original">8% increased Projectile Damage</span></div>
+            <div class="expected">期望翻译: 投射物伤害提高 8%</div>
+            <div class="actual">实际翻译: <span id="test1-actual">等待翻译...</span></div>
+            <div class="result" id="test1-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 2</h3>
+            <div class="original">原文: <span id="test2-original">15% increased Projectile Damage</span></div>
+            <div class="expected">期望翻译: 投射物伤害提高 15%</div>
+            <div class="actual">实际翻译: <span id="test2-actual">等待翻译...</span></div>
+            <div class="result" id="test2-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 3（小数）</h3>
+            <div class="original">原文: <span id="test3-original">8.5% increased Projectile Damage</span></div>
+            <div class="expected">期望翻译: 投射物伤害提高 8.5%</div>
+            <div class="actual">实际翻译: <span id="test3-actual">等待翻译...</span></div>
+            <div class="result" id="test3-result">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 2: 其他带数字的属性（带百分号）</h2>
+        <div class="test-item">
+            <h3>测试文本 4</h3>
+            <div class="original">原文: <span id="test4-original">20% increased Movement Speed</span></div>
+            <div class="expected">期望翻译: 20% 移动速度提高</div>
+            <div class="actual">实际翻译: <span id="test4-actual">等待翻译...</span></div>
+            <div class="result" id="test4-result">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 3: 单独的#（不带百分号）</h2>
+        <div class="test-item">
+            <h3>测试文本 5</h3>
+            <div class="original">原文: <span id="test5-original">+10 total to Strength</span></div>
+            <div class="expected">期望翻译: +10 力量</div>
+            <div class="actual">实际翻译: <span id="test5-actual">等待翻译...</span></div>
+            <div class="result" id="test5-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 6</h3>
+            <div class="original">原文: <span id="test6-original">10 total to Strength</span></div>
+            <div class="expected">期望翻译: +10 力量（或 10 力量）</div>
+            <div class="actual">实际翻译: <span id="test6-actual">等待翻译...</span></div>
+            <div class="result" id="test6-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 7</h3>
+            <div class="original">原文: <span id="test7-original">+25 total to all Attributes</span></div>
+            <div class="expected">期望翻译: +25 全属性</div>
+            <div class="actual">实际翻译: <span id="test7-actual">等待翻译...</span></div>
+            <div class="result" id="test7-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 8</h3>
+            <div class="original">原文: <span id="test8-original">-5 total to Strength</span></div>
+            <div class="expected">期望翻译: -5 力量</div>
+            <div class="actual">实际翻译: <span id="test8-actual">等待翻译...</span></div>
+            <div class="result" id="test8-result">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 4: 不带数字的文本（确保原有功能正常）</h2>
+        <div class="test-item">
+            <h3>测试文本 9</h3>
+            <div class="original">原文: <span id="test9-original">Life</span></div>
+            <div class="expected">期望翻译: 生命</div>
+            <div class="actual">实际翻译: <span id="test9-actual">等待翻译...</span></div>
+            <div class="result" id="test9-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 10</h3>
+            <div class="original">原文: <span id="test10-original">Energy Shield</span></div>
+            <div class="expected">期望翻译: 能量护盾</div>
+            <div class="actual">实际翻译: <span id="test10-actual">等待翻译...</span></div>
+            <div class="result" id="test10-result">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 5: DOM 元素中的文本（实际网页场景）</h2>
+        <div class="test-item">
+            <h3>测试元素 1</h3>
+            <div class="test-element" id="dom-test1">8% increased Projectile Damage</div>
+            <div class="expected">期望翻译: 投射物伤害提高 8%</div>
+            <div class="actual">实际翻译: <span id="dom-test1-result">等待翻译...</span></div>
+            <div class="result" id="dom-test1-status">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试元素 2</h3>
+            <div class="test-element" id="dom-test2">15% increased Projectile Damage</div>
+            <div class="expected">期望翻译: 投射物伤害提高 15%</div>
+            <div class="actual">实际翻译: <span id="dom-test2-result">等待翻译...</span></div>
+            <div class="result" id="dom-test2-status">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试元素 3</h3>
+            <div class="test-element" id="dom-test3">+10 total to Strength</div>
+            <div class="expected">期望翻译: +10 力量</div>
+            <div class="actual">实际翻译: <span id="dom-test3-result">等待翻译...</span></div>
+            <div class="result" id="dom-test3-status">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试元素 4</h3>
+            <div class="test-element" id="dom-test4">10 total to Strength</div>
+            <div class="expected">期望翻译: +10 力量（或 10 力量）</div>
+            <div class="actual">实际翻译: <span id="dom-test4-result">等待翻译...</span></div>
+            <div class="result" id="dom-test4-status">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 3: 不带数字的文本（确保原有功能正常）</h2>
+        <div class="test-item">
+            <h3>测试文本 7</h3>
+            <div class="original">原文: <span id="test7-original">Life</span></div>
+            <div class="expected">期望翻译: 生命</div>
+            <div class="actual">实际翻译: <span id="test7-actual">等待翻译...</span></div>
+            <div class="result" id="test7-result">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试文本 8</h3>
+            <div class="original">原文: <span id="test8-original">Energy Shield</span></div>
+            <div class="expected">期望翻译: 能量护盾</div>
+            <div class="actual">实际翻译: <span id="test8-actual">等待翻译...</span></div>
+            <div class="result" id="test8-result">测试中...</div>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>测试用例 4: DOM 元素中的文本（实际网页场景）</h2>
+        <div class="test-item">
+            <h3>测试元素 1</h3>
+            <div class="test-element" id="dom-test1">8% increased Projectile Damage</div>
+            <div class="expected">期望翻译: 投射物伤害提高 8%</div>
+            <div class="actual">实际翻译: <span id="dom-test1-result">等待翻译...</span></div>
+            <div class="result" id="dom-test1-status">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试元素 2</h3>
+            <div class="test-element" id="dom-test2">15% increased Projectile Damage</div>
+            <div class="expected">期望翻译: 投射物伤害提高 15%</div>
+            <div class="actual">实际翻译: <span id="dom-test2-result">等待翻译...</span></div>
+            <div class="result" id="dom-test2-status">测试中...</div>
+        </div>
+        <div class="test-item">
+            <h3>测试元素 3</h3>
+            <div class="test-element" id="dom-test3">+10 total to Strength</div>
+            <div class="expected">期望翻译: +10 力量</div>
+            <div class="actual">实际翻译: <span id="dom-test3-result">等待翻译...</span></div>
+            <div class="result" id="dom-test3-status">测试中...</div>
+        </div>
+    </div>
+
+    <!-- 加载翻译脚本 -->
+    <script src="translations.js"></script>
+    <script src="content.js"></script>
+    
+    <script>
+        // 等待脚本加载完成
+        window.addEventListener('DOMContentLoaded', () => {
+            // 模拟 Chrome storage API（用于测试）
+            if (typeof chrome === 'undefined') {
+                window.chrome = {
+                    storage: {
+                        sync: {
+                            get: function(keys, callback) {
+                                callback({ translationEnabled: true });
+                            },
+                            set: function(data, callback) {
+                                if (callback) callback();
+                            }
+                        }
+                    },
+                    runtime: {
+                        onMessage: {
+                            addListener: function() {}
+                        }
+                    }
+                };
+            }
+
+            // 等待 translationsMap 可用
+            setTimeout(() => {
+                runTests();
+            }, 100);
+        });
+
+        function runTests() {
+            // 测试用例定义
+            const testCases = [
+                {
+                    id: 'test1',
+                    original: '8% increased Projectile Damage',
+                    expected: '投射物伤害提高 8%'
+                },
+                {
+                    id: 'test2',
+                    original: '15% increased Projectile Damage',
+                    expected: '投射物伤害提高 15%'
+                },
+                {
+                    id: 'test3',
+                    original: '8.5% increased Projectile Damage',
+                    expected: '投射物伤害提高 8.5%'
+                },
+                {
+                    id: 'test4',
+                    original: '20% increased Movement Speed',
+                    expected: '20% 移动速度提高'
+                },
+                {
+                    id: 'test5',
+                    original: '+10 total to Strength',
+                    expected: '+10 力量'
+                },
+                {
+                    id: 'test6',
+                    original: '10 total to Strength',
+                    expected: '+10 力量'  // 或 '10 力量'，取决于翻译模板
+                },
+                {
+                    id: 'test7',
+                    original: '+25 total to all Attributes',
+                    expected: '+25 全属性'
+                },
+                {
+                    id: 'test8',
+                    original: '-5 total to Strength',
+                    expected: '-5 力量'
+                },
+                {
+                    id: 'test9',
+                    original: 'Life',
+                    expected: '生命'
+                },
+                {
+                    id: 'test10',
+                    original: 'Energy Shield',
+                    expected: '能量护盾'
+                }
+            ];
+
+            // 运行函数测试
+            testCases.forEach(testCase => {
+                const actual = translateText(testCase.original);
+                // 对于test6，允许两种结果
+                let passed = actual === testCase.expected;
+                if (testCase.id === 'test6') {
+                    passed = actual === '+10 力量' || actual === '10 力量';
+                }
+                
+                // 更新显示
+                document.getElementById(`${testCase.id}-actual`).textContent = actual;
+                const resultEl = document.getElementById(`${testCase.id}-result`);
+                resultEl.textContent = passed ? '✓ 通过' : '✗ 失败';
+                resultEl.className = `result ${passed ? 'pass' : 'fail'}`;
+            });
+
+            // 测试 DOM 元素翻译
+            const domTests = [
+                {
+                    elementId: 'dom-test1',
+                    expected: '投射物伤害提高 8%'
+                },
+                {
+                    elementId: 'dom-test2',
+                    expected: '投射物伤害提高 15%'
+                },
+                {
+                    elementId: 'dom-test3',
+                    expected: '+10 力量'
+                },
+                {
+                    elementId: 'dom-test4',
+                    expected: '+10 力量'  // 或 '10 力量'，取决于翻译模板
+                }
+            ];
+
+            // 手动触发DOM元素翻译（模拟content.js的行为）
+            domTests.forEach(test => {
+                const element = document.getElementById(test.elementId);
+                if (element && element.firstChild && element.firstChild.nodeType === Node.TEXT_NODE) {
+                    translateNode(element.firstChild);
+                } else if (element) {
+                    translateNode(element);
+                }
+            });
+
+            // 等待翻译完成
+            setTimeout(() => {
+                domTests.forEach(test => {
+                    const element = document.getElementById(test.elementId);
+                    const actual = element.textContent;
+                    // 对于dom-test4，允许两种结果
+                    let passed = actual === test.expected;
+                    if (test.elementId === 'dom-test4') {
+                        passed = actual === '+10 力量' || actual === '10 力量';
+                    }
+                    
+                    document.getElementById(`${test.elementId}-result`).textContent = actual;
+                    const statusEl = document.getElementById(`${test.elementId}-status`);
+                    statusEl.textContent = passed ? '✓ 通过' : '✗ 失败';
+                    statusEl.className = `result ${passed ? 'pass' : 'fail'}`;
+                });
+            }, 200);
+        }
+    </script>
+</body>
+</html>
+

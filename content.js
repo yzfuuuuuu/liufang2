@@ -23,6 +23,88 @@ function translateText(text) {
     }
   }
   
+  // 尝试处理数字替换的情况（例如："8% increased Projectile Damage" -> "投射物伤害提高 8%"）
+  // 也支持单独的#（例如："+10 total to Strength" -> "+10 力量" 或 "10 total to Strength" -> "+10 力量"）
+  // 匹配数字模式：包括整数、小数、正负数等（支持如 8, 8.5, -10, +10 等格式）
+  const numberPattern = /[+-]?\d+\.?\d*/g;
+  const numberMatches = trimmedText.match(numberPattern);
+  
+  if (numberMatches && numberMatches.length > 0) {
+    // 方法1：直接替换所有数字（包括符号）为#，尝试精确匹配
+    let templateText = trimmedText.replace(/[+-]?\d+\.?\d*/g, '#');
+    const templateLower = templateText.toLowerCase();
+    
+    for (const [key, value] of Object.entries(translationsMap)) {
+      const keyLower = key.toLowerCase();
+      if (keyLower === templateLower) {
+        let translated = value;
+        const hashCount = (translated.match(/#/g) || []).length;
+        if (hashCount === numberMatches.length) {
+          let numIndex = 0;
+          translated = translated.replace(/#/g, () => {
+            return numberMatches[numIndex++] || '#';
+          });
+          return translated;
+        }
+      }
+    }
+    
+    // 方法2：如果精确匹配失败，尝试处理符号不匹配的情况
+    // 生成两种模板变体：不带符号和带+号
+    const templateWithoutSign = trimmedText.replace(/[+-]?\d+\.?\d*/g, '#');
+    const templateWithPlus = trimmedText.replace(/[+-]?\d+\.?\d*/g, (match) => {
+      // 如果数字前没有符号，添加+号；如果有符号，保留
+      return match.startsWith('+') || match.startsWith('-') ? '#' : '+#';
+    });
+    
+    const templateVariants = [
+      { template: templateWithoutSign },
+      { template: templateWithPlus }
+    ];
+    
+    for (const variant of templateVariants) {
+      const variantLower = variant.template.toLowerCase();
+      for (const [key, value] of Object.entries(translationsMap)) {
+        const keyLower = key.toLowerCase();
+        if (keyLower === variantLower) {
+          let translated = value;
+          const hashCount = (translated.match(/#/g) || []).length;
+          if (hashCount === numberMatches.length) {
+            // 先找到所有#的位置，记录每个#前是否有符号
+            const hashPositions = [];
+            let searchIndex = 0;
+            while (true) {
+              const hashIndex = translated.indexOf('#', searchIndex);
+              if (hashIndex === -1) break;
+              const charBefore = hashIndex > 0 ? translated[hashIndex - 1] : '';
+              hashPositions.push({
+                index: hashIndex,
+                hasSign: charBefore === '+' || charBefore === '-'
+              });
+              searchIndex = hashIndex + 1;
+            }
+            
+            // 从后往前替换，避免位置变化影响
+            for (let i = hashPositions.length - 1; i >= 0; i--) {
+              const pos = hashPositions[i];
+              const originalNum = numberMatches[i];
+              let replacement;
+              if (pos.hasSign) {
+                // 翻译模板有符号，保留原始数字的符号（如果有），否则添加+号
+                replacement = originalNum.startsWith('+') || originalNum.startsWith('-') ? originalNum : '+' + originalNum;
+              } else {
+                // 翻译模板无符号，只使用数字部分（移除符号）
+                replacement = originalNum.replace(/^[+-]/, '');
+              }
+              translated = translated.substring(0, pos.index) + replacement + translated.substring(pos.index + 1);
+            }
+            return translated;
+          }
+        }
+      }
+    }
+  }
+  
   // 如果找不到匹配，返回原文
   return text;
 }
